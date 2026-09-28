@@ -78,7 +78,7 @@ export async function loginUser(req, res) {
 export async function refresh(req, res) {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
-    return res.status(400).json({
+    return res.status(401).json({
       message: "Refresh token is not provided",
       success: false,
     });
@@ -87,7 +87,7 @@ export async function refresh(req, res) {
     const decoded = verifyRefreshToken(refreshToken);
     const session = await sessionModel.findOne({ userId: decoded.userId });
     if (!session) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Refresh token is not valid 1",
         success: false,
       });
@@ -98,7 +98,7 @@ export async function refresh(req, res) {
     );
     if (!isValidRefreshToken) {
       await session.deleteMany({ userId: decoded.userId });
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Refresh token is not valid 2",
         success: false,
       });
@@ -124,7 +124,7 @@ export async function refresh(req, res) {
         accessToken: token.accessToken,
       });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(401).json({
       message: "Invaild refresh token 3",
       success: false,
     });
@@ -135,7 +135,7 @@ export async function getUser(req, res) {
   const authHeader = req.headers.authorization;
 
 if (!authHeader) {
-    return res.status(400).json({
+    return res.status(401).json({
         message: "Authorization header is missing",
         success: false,
     });
@@ -143,7 +143,7 @@ if (!authHeader) {
 
 const accessToken = authHeader.split(" ")[1];
   if (!accessToken) {
-    return res.status(400).json({
+    return res.status(401).json({
       message: "Access token is not provided",
       success: false,
     });
@@ -162,7 +162,7 @@ const accessToken = authHeader.split(" ")[1];
     });
   } catch (error) {
     console.log(error);
-    return res.status(400).json({
+    return res.status(401).json({
       message: "Access token is not valid",
       success: false,
     });
